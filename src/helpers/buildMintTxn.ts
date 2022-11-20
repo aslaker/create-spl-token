@@ -6,6 +6,7 @@ import {
 } from "@solana/spl-token";
 import {
   Keypair,
+  PublicKey,
   SystemProgram,
   TransactionInstruction,
 } from "@solana/web3.js";
@@ -17,7 +18,10 @@ export async function buildMintInstructions({
   decimals,
   mintAuthority,
   freezeAuthority,
-}: CreateMintArgs) {
+}: CreateMintArgs): Promise<{
+  mintInstructions: TransactionInstruction[];
+  mintKeypair: Keypair;
+}> {
   const mintKeypair = Keypair.generate();
   const lamports = await getMinimumBalanceForRentExemptMint(connection);
 
@@ -41,5 +45,5 @@ export async function buildMintInstructions({
       )
     ),
   ];
-  return mintInstructions;
+  return { mintInstructions, mintKeypair };
 }

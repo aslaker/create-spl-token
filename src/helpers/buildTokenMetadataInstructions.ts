@@ -3,11 +3,7 @@ import {
   DataV2,
   createCreateMetadataAccountV2Instruction,
 } from "@metaplex-foundation/mpl-token-metadata";
-import {
-  Keypair,
-  PublicKey,
-  TransactionInstruction,
-} from "@solana/web3.js";
+import { Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
 import * as fs from "fs";
 
 export async function buildTokenMetadataInstructions({
@@ -22,7 +18,7 @@ export async function buildTokenMetadataInstructions({
   metaplex: Metaplex;
   image: {
     name: string;
-    file: Buffer | string;
+    fileLocation: string;
   };
   mint: PublicKey;
   user: Keypair;
@@ -30,14 +26,8 @@ export async function buildTokenMetadataInstructions({
   symbol: string;
   description: string;
 }): Promise<TransactionInstruction[]> {
-  let file;
-
-  if (Buffer.isBuffer(image.file)) {
-    file = toMetaplexFile(image.file, image.name);
-  } else {
-    const buffer = fs.readFileSync(image.file);
-    file = toMetaplexFile(buffer, image.name);
-  }
+  const buffer = fs.readFileSync(image.fileLocation);
+  const file = toMetaplexFile(buffer, image.name);
 
   const imageUri = await metaplex.storage().upload(file);
 
